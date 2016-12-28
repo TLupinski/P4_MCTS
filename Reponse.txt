@@ -1,0 +1,31 @@
+1. Affichez à chaque coup de l’ordinateur, le nombre de simulations réalisées pour calculer ce
+coup et une estimation de la probabilité de victoire pour l’ordinateur.
+
+
+2. Testez différentes limites de temps pour l’ordinateur et comparez les résultats obtenus. A
+partir de quel temps de calcul l’ordinateur vous bat à tous les coups ?
+
+
+3. Implémentez l’amélioration des simulations consistant à toujours choisir un coup gagnant
+lorsque cela est possible. Comparez la qualité de jeu de cette nouvelle version avec la précé-
+dente et expliquez à quoi cela est dû.
+
+=>LA qualité de jeu ne s'est pas vraiment améliorée, car si dans certains cas particulier où le joueur humain pourrait gagner si l'ordinateur ne fait pas un coup précis, la défaite de l'ordinateur ne se jouerait qu'à la chance,
+mais en général, les calculs pour tester les coups gagnants ralentissent énormément l'algorithme de simulation et le nombre d'itération est réduit, réduisant l'efficacité de l'algorithme en général.
+
+4. Si vous travaillez en C, quelle est l’utilité ici de compiler avec
+gcc -O3 plutôt qu’avec les options par défaut ? Donnez des exemples illustratifs.
+ 
+ => L'option -O3 permet d'optimiser le code pour augmenter sa vitesse d'execution.
+ Son intérêt dans ce cas est grand car elle permet de maximiser le nombre d'itérations possible dans le temps imparti.
+ En moyenne, en mettant le temps à 5 secondes, on a:
+ -60000 itérations sans l'option.
+ -90000 itérations avec l'option.
+
+5. Comparez les critères "max" et "robuste" pour choisir le coup à jouer en fin d’algorithme.
+Conduisent-ils souvent à des coups différents ?  Lequel paraît donner la meilleure perfor-
+mance ?
+
+
+6. Donnez une estimation du temps de calcul nécessaire pour jouer le premier coup avec
+l’algorithme Minimax (sans alpha-beta ni limitation de profondeur).

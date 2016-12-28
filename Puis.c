@@ -44,7 +44,7 @@ State * new_state(unsigned int nb_ligne, unsigned int nb_colonne)
 State * copy_state(State * SP)
 {
     State * S;
-    S = (State *)malloc(sizeof(SP)+1);
+    S = (State *)malloc(sizeof(State));
     S->width = SP->width;
     S->height = SP->height;
     S->nb_successor = SP->nb_successor;
@@ -54,13 +54,6 @@ State * copy_state(State * SP)
     for (i = 0; i < S->width; i++)
     {
         S->grille[i] = (char *)malloc(S->height*sizeof(**S->grille));
-        for (j = 0; j < S->height; j++)
-        {
-            S->grille[i][j] = SP->grille[i][j];
-        }
-    }
-    for (i = 0; i < S->width; i++)
-    {
         for (j = 0; j < S->height; j++)
         {
             S->grille[i][j] = SP->grille[i][j];
@@ -296,7 +289,7 @@ void print_state(State * S)
 {
     int w, h;
 
-    printf("|");
+    printf("\n|");
     for(w = 0; w < S->width; w++)
         printf(" %d ", w+1);  // on affiche le numero de la colonne
     printf("|\n");
@@ -319,7 +312,7 @@ void print_state(State * S)
     for(w = 0; w < S->width; w++)
         printf("___"); // une ligne 'souligné' pour dessiner le cadre
     printf("|\n");
-    printf("FIN AFFICHAGE\n");
+    printf("\n");
 }
 
 Play joueur1IA(State * S)
@@ -538,20 +531,27 @@ int main (int argc, char *argv[])
     Play play_chosen;
     int gameover = FALSE;
     int nbcoups = 0;
+    char rep;
     State * S = new_state(NB_LIGNES, NB_COLONNES);
     print_state(S);
 
+    printf("Voulez vous commencer a jouer? o/n");
+    scanf("%c", &rep);
+    if (rep == 'o')
+    {
+        S->player = 1;
+    } else
+    {
+        S->player = 0;
+    }
     while (!gameover)
     {
         do
         {
             play_chosen = demande(S);
-            print_state(S);
-            printf("L'ordinateur veut jouer %d\n", play_chosen.column);
-            printf("LA fonction dit que %d\n", valid_play(S,play_chosen));
         }while(valid_play(S,play_chosen)==FALSE); // tant qu'il n'est pas possible de jouer là, on redemande
-        play(S, play_chosen);
         printf("Joueur %s a joue:\n", S->player == FALSE ? "ORDINATEUR" : "HUMAIN");
+        play(S, play_chosen);
         print_state(S);
         nbcoups++;
         if (final_state(S)==TRUE)
@@ -565,6 +565,8 @@ int main (int argc, char *argv[])
             printf("Match NUL (%d coups)\n", nbcoups);
         }
     }
+    printf("Merci d'avoir joué");
+    scanf("%s",rep);
     return 0;
 }
 

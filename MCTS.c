@@ -51,7 +51,7 @@ void free_node (Node * node) {
 //Fonction calculant avec UCB la valeur de chaque noeud et renvoyant un  des noeuds ayant la plus grande valeur.
 Node * choose_best_UCB(Node * current)
 {
-    int i,nb_best_nodes;
+    int i,nb_best_nodes = 0;
     Node * best_node[current->nb_childs];
     best_node[0] = NULL;
     double best_result = -INFINITY;
@@ -81,14 +81,16 @@ Node * choose_best_UCB(Node * current)
 }//Fonction prenant la valeur de chaque noeud et renvoyant un des noeuds ayant la plus grande valeur.
 Node * choose_best(Node * current)
 {
-    int i,nb_best_nodes;
+    int i,nb_best_nodes, player;
     Node * best_node[current->nb_childs];
     best_node[0] = NULL;
+    player = current->player;
     double best_result = -INFINITY;
     for (i = 0; i < current->nb_childs; i++)
     {
         Node * node = current->childs[i];
-        double node_result = (node->nb_wins/node->nb_simus);
+        double node_result = fabs((1-player) - (node->nb_wins/node->nb_simus));
+        printf("Node %d : %f\n", i, node_result);
         if (node_result > best_result)
         {
             best_node[0] = node;
@@ -138,18 +140,31 @@ Node * select(Node * Tree) {
 double simulate(Node * Tree)
 {
     time_t t;
-    int r;
+    int i, r;
     srand(time(&t));
-    State * current = copy_state(Tree->state);
+    State * current = copy_state(Tree->state), * test;
     double result = final_state(current);
     while(result == 0)
     {
         Play * plays = get_valid_plays(current);
+        for (i = 0; i < current->nb_successor; i++)
+        {
+            test = copy_state(current);
+            play(test,plays[i]);
+            result = final_state(test);
+            if (result != 0)
+            {
+                free(test);
+                return test->player;
+            }
+            free(test);
+        }
         r = rand()%current->nb_successor;
         play(current, plays[r]);
         result = final_state(current);
         free(plays);
     }
+    free(current);
     return current->player;
 }
 
@@ -159,7 +174,7 @@ void backtrack(Node * Tree, double value)
     Node * current = Tree;
     while(current != NULL)
     {
-        current->nb_simus++;
+        current->nb_simus += 1.;
         current->nb_wins += fabs(value - current->player);
         current = current->parent;
     }
@@ -170,12 +185,12 @@ Play mcts_algorithm(State * start, time_t time_limit)
 {
 	clock_t tic, toc;
 	tic = clock();
-	int spent_time, iter = 0;
 
+	int spent_time, iter = 0;
     Node * Tree;
     Tree = new_node((Node*)NULL, new_play(0));
-    int i;
     Tree->state = copy_state(start);
+    Tree->player = Tree->state->player;
     do
     {
         Node * selected_node = select(Tree);
@@ -186,7 +201,9 @@ Play mcts_algorithm(State * start, time_t time_limit)
         spent_time = (int)( ((double) (toc - tic)) / CLOCKS_PER_SEC );
 		iter ++;
 	} while ( spent_time < time_limit);
+    printf("Nombre d'iterations : %d\n",iter);
     Node * best = choose_best(Tree);
+    printf("Pourcentage de victoire : %f/%f = %f\n",Tree->nb_wins,Tree->nb_simus,Tree->nb_wins/Tree->nb_simus);
     Play result = new_play(best->play.column);
     free_node(Tree);
     return result;

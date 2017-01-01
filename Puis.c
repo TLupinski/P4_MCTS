@@ -321,7 +321,7 @@ Play joueur1IA(State * S)
    /* printf("Qui commence (0 : HUMAIN, 1 : ORDINATEUR) ? ");
 	scanf("%d", &(etat->joueur) ); */
 
-    int col=1;
+    int col = 1;
     printf("JOUEUR: %s - quelle colonne voulez vous jouer?\n" , S->player == FALSE ? "ORDINATEUR" : "HUMAIN");
     scanf("%d", &col);
     return new_play(col - 1);
@@ -535,7 +535,7 @@ int main (int argc, char *argv[])
     State * S = new_state(NB_LIGNES, NB_COLONNES);
     print_state(S);
 
-    printf("Voulez vous commencer a jouer? o/n");
+    printf("Voulez vous commencer a jouer? o/n\n");
     scanf("%c", &rep);
     if (rep == 'o')
     {
@@ -557,7 +557,7 @@ int main (int argc, char *argv[])
         if (final_state(S)==TRUE)
         {
             gameover = TRUE;
-            printf("Victoire de %s au %dieme coups!", S->player == FALSE ? "ORDINATEUR" : "HUMAIN", nbcoups);
+            printf("Victoire de %s au %dieme coups!", S->player == TRUE ? "ORDINATEUR" : "HUMAIN", nbcoups);
         }
         else if (nbcoups == NB_COLONNES*NB_LIGNES)
         {

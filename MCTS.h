@@ -33,7 +33,9 @@ void free_node (Node * node);
 
 Node * choose_best_UCB(Node * current);
 
-Node * choose_best(Node * current);
+Node * choose_best_max(Node * current);
+
+Node * choose_best_robuste(Node * current);
 
 Node * expand(Node * Tree);
 

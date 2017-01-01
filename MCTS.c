@@ -79,7 +79,7 @@ Node * choose_best_UCB(Node * current)
     return best_node[0];
 
 }//Fonction prenant la valeur de chaque noeud et renvoyant un des noeuds ayant la plus grande valeur.
-Node * choose_best(Node * current)
+Node * choose_best_max(Node * current)
 {
     int i,nb_best_nodes, player;
     Node * best_node[current->nb_childs];
@@ -90,7 +90,37 @@ Node * choose_best(Node * current)
     {
         Node * node = current->childs[i];
         double node_result = fabs((1-player) - (node->nb_wins/node->nb_simus));
-        printf("Node %d : %f\n", i, node_result);
+        if (node_result > best_result)
+        {
+            best_node[0] = node;
+            nb_best_nodes = 1;
+            best_result = node_result;
+        } else if (node_result == best_result)
+        {
+            best_node[nb_best_nodes] = node;
+            nb_best_nodes++;
+        }
+    }
+    if (nb_best_nodes > 1)
+    {
+        time_t t;
+        srand(time(&t));
+        best_node[0] = best_node[rand()%nb_best_nodes];
+    }
+    return best_node[0];
+}
+
+Node * choose_best_robuste(Node * current)
+{
+    int i,nb_best_nodes, player;
+    Node * best_node[current->nb_childs];
+    best_node[0] = NULL;
+    player = current->player;
+    double best_result = -INFINITY;
+    for (i = 0; i < current->nb_childs; i++)
+    {
+        Node * node = current->childs[i];
+        double node_result = node->nb_simus;
         if (node_result > best_result)
         {
             best_node[0] = node;
@@ -154,8 +184,9 @@ double simulate(Node * Tree)
             result = final_state(test);
             if (result != 0)
             {
+                int player = test->player;
                 free(test);
-                return test->player;
+                return player;
             }
             free(test);
         }
@@ -164,8 +195,9 @@ double simulate(Node * Tree)
         result = final_state(current);
         free(plays);
     }
+    int player = current->player;
     free(current);
-    return current->player;
+    return player;
 }
 
 //Fonction permettant de mettre à jours le nombre de victoires/simulations dans un arbre à partir de la feuille explorée.
@@ -202,9 +234,14 @@ Play mcts_algorithm(State * start, time_t time_limit)
 		iter ++;
 	} while ( spent_time < time_limit);
     printf("Nombre d'iterations : %d\n",iter);
-    Node * best = choose_best(Tree);
+    Node * max = choose_best_max(Tree);
+    Node * robuste = choose_best_robuste(Tree);
     printf("Pourcentage de victoire : %f/%f = %f\n",Tree->nb_wins,Tree->nb_simus,Tree->nb_wins/Tree->nb_simus);
-    Play result = new_play(best->play.column);
+    //printf("Résultat \"Max\" :\n");
+    print_state(max->state);
+    //printf("Résultat \"Robuste\" :\n");
+    print_state(robuste->state);
+    Play result = new_play(max->play.column);
     free_node(Tree);
     return result;
 }

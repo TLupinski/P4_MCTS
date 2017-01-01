@@ -5,7 +5,7 @@
 #define LARGEUR_MAX 7
 #define NB_COLONNES 7
 #define NB_LIGNES 6
-#define TIME_LIMIT 2
+#define TIME_LIMIT 5
 
 #define  VIDE ' '
 #define ORDINATEUR 'x'
